@@ -1,0 +1,18 @@
+version: '3.4'
+
+volumes:
+  identity.db:
+    name: ${DB_CONTAINER:-identity.db}
+
+services:
+  identity.api:
+    image: ${DOCKER_REGISTRY-}identityapi
+    build:
+      context: .
+      dockerfile: Identity/Dockerfile
+    depends_on: 
+      - identity.db
+  
+  identity.db:
+    container_name: Identity.Db
+    image: mcr.microsoft.com/mssql/server:2022-latest
