@@ -14,23 +14,30 @@ namespace Identity.Api.Controllers
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Login([FromBody] LoginRequestModel model)
         {
-            return Ok(await UserService.Login(model));
+            try
+            {
+                return Ok(await UserService.Login(model));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("register")]
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Register([FromBody] RegisterRequestModel model)
         {
-            await UserService.Register(model);
+            try
+            {
+                await UserService.Register(model);
 
-            return Ok();
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<ActionResult> Test()
-        {
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

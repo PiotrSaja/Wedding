@@ -1,5 +1,6 @@
 ﻿using Encryption;
 using Identity.Api.Data.Models;
+using Identity.Api.Exceptions;
 using Identity.Api.Repositories;
 
 namespace Identity.Api.Services
@@ -23,11 +24,11 @@ namespace Identity.Api.Services
             var user = await User.GetUserByEmail(model.Email);
 
             if (user is null)
-                throw new Exception("User not found");
+                throw new UserNotFoundException();
 
             var validateStatus = user.ValidatePassword(model.Password, encryptor);
 
-            if (validateStatus == false) throw new Exception("User not authorized");
+            if (validateStatus == false) throw new UserNotFoundException();
 
             var token = TokenService.CreateToken(user);
 
@@ -50,6 +51,7 @@ namespace Identity.Api.Services
 
         public Task<TokenModel> Validate(ValidateTokenModel model)
         {
+            //todo Implement a refresh token method
             throw new NotImplementedException();
         }
     }
