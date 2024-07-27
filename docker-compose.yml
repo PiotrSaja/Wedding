@@ -1,8 +1,8 @@
 version: '3.4'
 
 volumes:
-  identity.db:
-    name: ${DB_CONTAINER:-identity.db}
+  system.db:
+    name: ${DB_CONTAINER:-system.db}
 
 services:
   identity.api:
@@ -11,8 +11,15 @@ services:
       context: .
       dockerfile: Identity/Dockerfile
     depends_on: 
-      - identity.db
+      - system.db
+  wedding.api:
+    image: ${DOCKER_REGISTRY-}weddingapi
+    build:
+      context: .
+      dockerfile: Wedding/Dockerfile
+    depends_on: 
+      - system.db
   
-  identity.db:
-    container_name: Identity.Db
+  system.db:
+    container_name: System.Db
     image: mcr.microsoft.com/mssql/server:2022-latest

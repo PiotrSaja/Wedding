@@ -14,6 +14,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wedding", "Wedding", "{F1AC9258-83CF-484A-BE47-61E45931DC08}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{6F55946D-3259-4E6F-A744-51B72CE61600}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{20FD4D6C-1555-4238-8A2C-D8FB27D4F836}"
 EndProject
