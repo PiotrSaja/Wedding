@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Wedding.Api.Data;
+using Wedding.Api.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
         });
 });
 
+builder.Services.AddSingleton<EncryptionHelper>();
 
 var app = builder.Build();
 

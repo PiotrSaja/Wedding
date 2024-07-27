@@ -3,27 +3,39 @@ using System.Text;
 
 namespace Wedding.Api.Helpers
 {
-    public static class EncryptionHelper
+    public class EncryptionHelper
     {
-        private static readonly byte[] Key = Encoding.UTF8.GetBytes("your-256-bit-key"); // Replace with your key
-        private static readonly byte[] IV = Encoding.UTF8.GetBytes("your-16-byte-iv"); // Replace with your IV
+        private static byte[] _key;
+        private static byte[] _iv;
+
+        public EncryptionHelper(IConfiguration configuration)
+        {
+            var key = configuration["Encryption:Key"];
+            var iv = configuration["Encryption:IV"];
+
+            if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(iv))
+                throw new ArgumentNullException("Encryption key and IV must be provided");
+
+            _key = Encoding.UTF8.GetBytes(key);
+            _iv = Encoding.UTF8.GetBytes(iv);
+        }
 
         public static string Encrypt(string plainText)
         {
             if (string.IsNullOrEmpty(plainText))
                 return plainText;
 
-            using (Aes aesAlg = Aes.Create())
+            using (var aesAlg = Aes.Create())
             {
-                aesAlg.Key = Key;
-                aesAlg.IV = IV;
+                aesAlg.Key = _key;
+                aesAlg.IV = _iv;
 
                 ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
-                using (MemoryStream msEncrypt = new MemoryStream())
+                using (var msEncrypt = new MemoryStream())
                 {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (var swEncrypt = new StreamWriter(csEncrypt))
                     {
                         swEncrypt.Write(plainText);
                     }
@@ -38,16 +50,16 @@ namespace Wedding.Api.Helpers
             if (string.IsNullOrEmpty(cipherText))
                 return cipherText;
 
-            using (Aes aesAlg = Aes.Create())
+            using (var aesAlg = Aes.Create())
             {
-                aesAlg.Key = Key;
-                aesAlg.IV = IV;
+                aesAlg.Key = _key;
+                aesAlg.IV = _iv;
 
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+                var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
-                using (MemoryStream msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
-                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                using (var msDecrypt = new MemoryStream(Convert.FromBase64String(cipherText)))
+                using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                using (var srDecrypt = new StreamReader(csDecrypt))
                 {
                     return srDecrypt.ReadToEnd();
                 }

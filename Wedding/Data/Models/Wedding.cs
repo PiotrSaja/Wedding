@@ -8,11 +8,12 @@ namespace Wedding.Api.Data.Models
         public int Id { get; set; }
         public string Name { get; set; }
         [Encrypted]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public List<Guest> GuestList { get; set; }
         public Location Location { get; set; }
         public Menu Menu { get; set; }
         public string Description { get; set; }
         public List<Notification> Notifications { get; set; }
+        public ApiKey ApiKey { get; set; }
     }
 }
