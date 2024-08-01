@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Identity.Api.Data.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -10,6 +11,10 @@ namespace Identity.Api.Services
     public interface ITokenService
     {
         string CreateToken(User user);
+        string GenerateRefreshToken();
+        Task StoreRefreshToken(string userId, string refreshToken);
+        Task<string> GetStoredRefreshToken(string userId);
+        Task RemoveStoredRefreshToken(string userId);
     }
     #endregion
 
@@ -35,6 +40,29 @@ namespace Identity.Api.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+
+        public async Task StoreRefreshToken(string userId, string refreshToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> GetStoredRefreshToken(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task RemoveStoredRefreshToken(string userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

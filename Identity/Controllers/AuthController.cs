@@ -1,4 +1,6 @@
-﻿using Identity.Api.Services;
+﻿using Identity.Api.Models.Token;
+using Identity.Api.Models.User;
+using Identity.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,32 +14,27 @@ namespace Identity.Api.Controllers
 
         [HttpPost("login")]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult> Login([FromBody] LoginRequestModel model)
+        public async Task<IActionResult> Login([FromBody] LoginFormModel model)
         {
-            try
-            {
-                return Ok(await UserService.Login(model));
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(await UserService.Login(model));
         }
 
         [HttpPost("register")]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult> Register([FromBody] RegisterRequestModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterFormModel model)
         {
-            try
-            {
-                await UserService.Register(model);
+            await UserService.Register(model);
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("validate")]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> RefreshToken([FromBody] ValidateTokenRequestModel request)
+        {
+            var tokenModel = await UserService.Validate(request);
+            return Ok(tokenModel);
         }
     }
 }

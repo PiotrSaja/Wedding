@@ -1,16 +1,19 @@
 ﻿using Encryption;
 using Identity.Api.Data.Models;
 using Identity.Api.Exceptions;
+using Identity.Api.Models.Token;
+using Identity.Api.Models.User;
 using Identity.Api.Repositories;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Identity.Api.Services
 {
     #region IUserService
     public interface IUserService
     {
-        Task<TokenModel> Login(LoginRequestModel model);
-        Task<bool> Register(RegisterRequestModel model);
-        Task<TokenModel> Validate(ValidateTokenModel model);
+        Task<TokenModel> Login(LoginFormModel model);
+        Task<bool> Register(RegisterFormModel model);
+        Task<TokenModel> Validate(ValidateTokenRequestModel model);
     }
     #endregion 
     public class UserService(IUserRepository user, IEncryptor encryptor, ITokenService tokenService) : IUserService
@@ -19,7 +22,7 @@ namespace Identity.Api.Services
         protected IEncryptor Encryptor { get; } = encryptor;
         protected ITokenService TokenService { get; } = tokenService;
 
-        public async Task<TokenModel> Login(LoginRequestModel model)
+        public async Task<TokenModel> Login(LoginFormModel model)
         {
             var user = await User.GetUserByEmail(model.Email);
 
@@ -32,10 +35,20 @@ namespace Identity.Api.Services
 
             var token = TokenService.CreateToken(user);
 
-            return new TokenModel(token, DateTime.UtcNow);
+            var tokenModel = new TokenModel()
+            {
+                ExpirationDateUtc = DateTime.UtcNow,
+                Tokens = new Dictionary<string, string>()
+                {
+                    { TokenType.ACCESS.ToString(), token },
+                    { TokenType.REFRESH.ToString(), string.Empty },
+                }
+            };
+
+            return tokenModel;
         }
 
-        public async Task<bool> Register(RegisterRequestModel model)
+        public async Task<bool> Register(RegisterFormModel model)
         {
             var entity = new User()
             {
@@ -49,15 +62,42 @@ namespace Identity.Api.Services
             return true;
         }
 
-        public Task<TokenModel> Validate(ValidateTokenModel model)
+        public async Task<TokenModel> Validate(ValidateTokenRequestModel model)
         {
-            //todo Implement a refresh token method
-            throw new NotImplementedException();
+            var userId = string.Empty;
+
+            var storedRefreshToken = await TokenService.GetStoredRefreshToken(userId);
+
+            if (storedRefreshToken != model.RefreshToken)
+            {
+                throw new SecurityTokenException("Invalid refresh token");
+            }
+
+            var user = await User.GetById(Convert.ToInt32(userId));
+
+            if (user is null)
+            {
+                throw new UserNotFoundException();
+            }
+
+            var newAccessToken = TokenService.CreateToken(user);
+            var newRefreshToken = TokenService.GenerateRefreshToken();
+
+            await TokenService.StoreRefreshToken(userId, newRefreshToken);
+
+            var tokenModel = new TokenModel()
+            {
+                ExpirationDateUtc = DateTime.UtcNow.AddHours(1),
+                Tokens = new Dictionary<string, string>()
+                {
+                    { TokenType.ACCESS.ToString(), newAccessToken },
+                    { TokenType.REFRESH.ToString(), newRefreshToken },
+                }
+            };
+
+            await TokenService.RemoveStoredRefreshToken(userId);
+
+            return tokenModel;
         }
     }
-
-    public record TokenModel(string Token, DateTime ExpirationDate);
-    public record ValidateTokenModel(string Token, string RefreshToken, DateTime ExpirationDate);
-    public record LoginRequestModel(string Email, string Password);
-    public record RegisterRequestModel(string Email, string Password);
 }

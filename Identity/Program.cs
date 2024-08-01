@@ -1,11 +1,16 @@
+using System.Reflection;
 using Encryption;
+using FluentValidation.AspNetCore;
 using Identity.Api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scrutor;
 using System.Text;
+using FluentValidation;
+using BuildingBlocks.Exceptions.Handler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,7 +103,14 @@ builder.Services.Scan(scan => scan
     .AsMatchingInterface()
     .WithScopedLifetime());
 
+builder.Services.AddFluentValidationAutoValidation()
+    .AddFluentValidationClientsideAdapters()
+    .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
 builder.Services.AddTransient(typeof(IEncryptor), typeof(Encryptor));
+
+//Cross-Cutting Services
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 var app = builder.Build();
 
@@ -114,6 +126,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseExceptionHandler(options => { });
 
 // Auto-migrate
 using (var scope = app.Services.CreateScope())
