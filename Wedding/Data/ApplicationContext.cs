@@ -16,6 +16,7 @@ namespace Wedding.Api.Data
         public DbSet<Notification> Notification { get; set; }
         public DbSet<Models.Wedding> Weddings { get; set; }
         public DbSet<ApiKey> ApiKeys { get; set; }
+        public DbSet<Table> Tables { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

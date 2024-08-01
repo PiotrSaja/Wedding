@@ -4,7 +4,7 @@
 
 ### General
 
-- [ ] Docker configuration
+- [x] Docker configuration
 - [ ] CI/CD
 - [ ] Message bus implementation
 
@@ -16,7 +16,7 @@
 
 ### Wedding.Api
 
-- [ ] Dockerfile setup
+- [x] Dockerfile setup
 - [ ] Configuration of entities.
 - [ ] CRUD for whole service.
 
