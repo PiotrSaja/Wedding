@@ -12,7 +12,6 @@
 
 - [ ] Email confirmation
 - [ ] Token validate method (refresh)
-- [ ] Validation for models
 
 ### Wedding.Api
 

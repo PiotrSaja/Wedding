@@ -1,4 +1,5 @@
 using System.Text;
+using Carter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,8 +10,13 @@ using Wedding.Api.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add mediatr
+var assembly = typeof(Program).Assembly;
+builder.Services.AddMediatR(config =>
+{
+    config.RegisterServicesFromAssembly(assembly);
+});
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -47,6 +53,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Add context
 builder.Services.AddDbContext<ApplicationContext>(options =>
 {
     options.UseSqlServer(
@@ -61,6 +68,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
         });
 });
 
+// Add authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -77,6 +85,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// Register repositories
 builder.Services.Scan(scan => scan
     .FromCallingAssembly()
     .AddClasses(
@@ -86,7 +95,9 @@ builder.Services.Scan(scan => scan
     .AsMatchingInterface()
     .WithScopedLifetime());
 
-builder.Services.AddSingleton<EncryptionHelper>();
+builder.Services.AddSingleton<IEncryptionHelper, EncryptionHelper>();
+
+builder.Services.AddCarter();
 
 var app = builder.Build();
 
@@ -96,6 +107,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapCarter();
 
 app.UseHttpsRedirection();
 

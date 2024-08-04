@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Carter" Version="8.0.0" />
     <PackageReference Include="DotNetEnv" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
@@ -27,9 +28,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Admin\" />
-    <Folder Include="Controllers\Public\" />
+    <Folder Include="Features\Admin\ApiKeys\" />
+    <Folder Include="Features\Admin\Guests\" />
+    <Folder Include="Features\Admin\Locations\DeleteLocation\" />
+    <Folder Include="Features\Admin\Locations\GetLocation\" />
+    <Folder Include="Features\Admin\Locations\UpdateLocation\" />
+    <Folder Include="Features\Admin\Meals\" />
+    <Folder Include="Features\Admin\Menus\" />
+    <Folder Include="Features\Admin\Weddings\" />
+    <Folder Include="Features\Admin\Tables\" />
+    <Folder Include="Features\Admin\Notifications\" />
     <Folder Include="Exceptions\" />
+    <Folder Include="Features\Public\Menus\" />
+    <Folder Include="Features\Public\Weddings\" />
+    <Folder Include="Features\Public\Tables\" />
   </ItemGroup>
 
   <ItemGroup>
