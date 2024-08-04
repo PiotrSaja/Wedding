@@ -1,14 +1,10 @@
-﻿using BuildingBlocks.Data;
-using Wedding.Api.Attributes;
+﻿using Wedding.Api.Data.Models.Base;
 
 namespace Wedding.Api.Data.Models
 {
-    public class Wedding : IEntity
+    public class Wedding : BaseEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; }
-        [Encrypted]
-        public string UserId { get; set; }
         public List<Guest> GuestList { get; set; }
         public Location Location { get; set; }
         public Menu Menu { get; set; }

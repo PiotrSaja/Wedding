@@ -1,10 +1,9 @@
-﻿using BuildingBlocks.Data;
+﻿using Wedding.Api.Data.Models.Base;
 
 namespace Wedding.Api.Data.Models
 {
-    public class Meal : IEntity
+    public class Meal : BaseEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime Time { get; set; }

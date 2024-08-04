@@ -2,6 +2,7 @@
 using System.Reflection;
 using Wedding.Api.Attributes;
 using Wedding.Api.Data.Models;
+using Wedding.Api.Helpers;
 using Wedding.Api.Utilities;
 
 
@@ -9,6 +10,13 @@ namespace Wedding.Api.Data
 {
     public class ApplicationContext(DbContextOptions options) : DbContext(options)
     {
+        private readonly IEncryptionHelper _encryptionHelper;
+
+        public ApplicationContext(DbContextOptions options, IEncryptionHelper encryptionHelper) : this(options)
+        {
+            _encryptionHelper = encryptionHelper;
+        }
+
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Meal> Meals { get; set; }
@@ -30,7 +38,7 @@ namespace Wedding.Api.Data
                     var memberInfo = property.PropertyInfo ?? (MemberInfo)property.FieldInfo;
                     if (memberInfo != null && memberInfo.GetCustomAttribute<EncryptedAttribute>() != null)
                     {
-                        property.SetValueConverter(new EncryptedConverter());
+                        property.SetValueConverter(new EncryptedConverter(_encryptionHelper));
                     }
                 }
             }

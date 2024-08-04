@@ -1,11 +1,11 @@
-﻿using BuildingBlocks.Data;
+﻿using Wedding.Api.Data.Models.Base;
 
 namespace Wedding.Api.Data.Models
 {
-    public class Notification : IEntity
+    public class Notification : BaseEntity
     {
-        public int Id { get; set; }
         public string Message { get; set; }
         public DateTime ScheduledTime { get; set; }
+        public bool IsActive { get; set; }
     }
 }
