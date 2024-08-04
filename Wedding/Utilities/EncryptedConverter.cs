@@ -5,9 +5,9 @@ namespace Wedding.Api.Utilities
 {
     public class EncryptedConverter : ValueConverter<string, string>
     {
-        public EncryptedConverter() : base(
-            v => EncryptionHelper.Encrypt(v),
-            v => EncryptionHelper.Decrypt(v))
+        public EncryptedConverter(IEncryptionHelper encryptionHelper) : base(
+            v => encryptionHelper.Encrypt(v),
+            v => encryptionHelper.Decrypt(v))
         {
         }
     }

@@ -1,9 +1,15 @@
 ﻿using System.Security.Cryptography;
-using System.Text;
 
 namespace Wedding.Api.Helpers
 {
-    public class EncryptionHelper
+    #region IEncryptionHelper
+    public interface IEncryptionHelper
+    {
+        string Encrypt(string plainText);
+        string Decrypt(string cipherText);
+    }
+    #endregion
+    public class EncryptionHelper : IEncryptionHelper
     {
         private static byte[] _key;
         private static byte[] _iv;
@@ -16,11 +22,17 @@ namespace Wedding.Api.Helpers
             if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(iv))
                 throw new ArgumentNullException("Encryption key and IV must be provided");
 
-            _key = Encoding.UTF8.GetBytes(key);
-            _iv = Encoding.UTF8.GetBytes(iv);
+            _key = Convert.FromBase64String(key);
+            _iv = Convert.FromBase64String(iv);
+
+            if (_key.Length != 16 && _key.Length != 24 && _key.Length != 32)
+                throw new ArgumentException("Invalid key size. Key must be 16, 24, or 32 bytes.");
+
+            if (_iv.Length != 16)
+                throw new ArgumentException("Invalid IV size. IV must be 16 bytes.");
         }
 
-        public static string Encrypt(string plainText)
+        public string Encrypt(string plainText)
         {
             if (string.IsNullOrEmpty(plainText))
                 return plainText;
@@ -45,7 +57,7 @@ namespace Wedding.Api.Helpers
             }
         }
 
-        public static string Decrypt(string cipherText)
+        public string Decrypt(string cipherText)
         {
             if (string.IsNullOrEmpty(cipherText))
                 return cipherText;
